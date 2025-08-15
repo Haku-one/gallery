@@ -49,6 +49,16 @@ function add_scroll_with_normal_header() {
             }
         }
 
+        /* Исключаем модальные окна из transform */
+        #rutube-modal,
+        .rutube-modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            transform: none !important;
+            z-index: 99999 !important;
+        }
+
         /* Стили для планшетов и мобильных - обычный скролл */
         @media (max-width: 1024px) {
             body {
@@ -147,8 +157,7 @@ function add_scroll_with_normal_header() {
                 '.elementor[data-elementor-type="wp-page"]',
                 '.elementor-section',
                 '.elementor-container',
-                'main',
-                'body'
+                'main'
             ];
 
             for (let selector of selectors) {
@@ -157,6 +166,24 @@ function add_scroll_with_normal_header() {
                     container = element;
                     break;
                 }
+            }
+
+            // Создаем обертку если контейнер не найден
+            if (!container) {
+                const wrapper = document.createElement('div');
+                wrapper.id = 'scroll-wrapper';
+                wrapper.style.cssText = 'position: relative; width: 100%; height: 100vh;';
+                
+                // Перемещаем весь body content в обертку, кроме модальных окон
+                const bodyChildren = Array.from(document.body.children);
+                bodyChildren.forEach(child => {
+                    if (!child.classList.contains('rutube-modal') && child.id !== 'rutube-modal' && child.id !== 'scrollNav') {
+                        wrapper.appendChild(child);
+                    }
+                });
+                
+                document.body.appendChild(wrapper);
+                container = wrapper;
             }
 
             if (!container) {
@@ -170,10 +197,11 @@ function add_scroll_with_normal_header() {
 
             // Функция для проверки состояния модальных окон
             function isModalOpen() {
+                const modal = document.getElementById('rutube-modal');
                 return document.body.classList.contains('modal-open') || 
                        document.body.classList.contains('video-modal-open') ||
-                       document.querySelector('.rutube-modal.show') !== null ||
-                       document.querySelector('#rutube-modal.show') !== null;
+                       (modal && modal.classList.contains('show')) ||
+                       (modal && modal.style.display === 'block');
             }
 
             // Создаем навигацию
@@ -200,10 +228,17 @@ function add_scroll_with_normal_header() {
                 mutations.forEach(function(mutation) {
                     if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                         const target = mutation.target;
-                        if (target.classList.contains('show') && target.id === 'rutube-modal') {
-                            // Модальное окно открылось
-                            if (isDesktop) {
-                                toggleHeader(true);
+                        if (target.id === 'rutube-modal') {
+                            if (target.classList.contains('show')) {
+                                // Модальное окно открылось
+                                if (isDesktop) {
+                                    toggleHeader(true);
+                                }
+                            } else {
+                                // Модальное окно закрылось
+                                if (isDesktop && currentSection > 0) {
+                                    toggleHeader(false);
+                                }
                             }
                         }
                     }
