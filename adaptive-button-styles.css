@@ -1,0 +1,50 @@
+/* Адаптивные стили для кнопок с clamp */
+.bntfull .elementor-button {
+    /* Адаптивный border-radius от 8px до 24px */
+    border-radius: clamp(8px, 2vw, 24px);
+    
+    /* Адаптивный padding по вертикали от 12px до 20px */
+    padding-top: clamp(12px, 3vw, 20px);
+    padding-bottom: clamp(12px, 3vw, 20px);
+    
+    /* Адаптивный padding по горизонтали от 24px до 48px */
+    padding-left: clamp(24px, 5vw, 48px);
+    padding-right: clamp(24px, 5vw, 48px);
+    
+    /* Дополнительные адаптивные свойства */
+    font-size: clamp(14px, 2.5vw, 18px);
+    transition: all 0.3s ease;
+}
+
+/* Альтернативный вариант с более точной адаптивностью */
+.bntfull .elementor-button {
+    /* Используем комбинацию единиц для лучшей адаптивности */
+    border-radius: clamp(0.5rem, 1.5vw + 0.25rem, 1.5rem);
+    
+    /* Вертикальные отступы */
+    padding-block: clamp(0.75rem, 2vw + 0.25rem, 1.25rem);
+    
+    /* Горизонтальные отступы */
+    padding-inline: clamp(1.5rem, 4vw + 0.5rem, 3rem);
+    
+    /* Адаптивный размер шрифта */
+    font-size: clamp(0.875rem, 2vw + 0.25rem, 1.125rem);
+}
+
+/* Для очень маленьких экранов */
+@media (max-width: 480px) {
+    .bntfull .elementor-button {
+        border-radius: clamp(6px, 4vw, 12px);
+        padding: clamp(10px, 3vw, 16px) clamp(20px, 6vw, 32px);
+        font-size: clamp(12px, 3.5vw, 16px);
+    }
+}
+
+/* Для больших экранов */
+@media (min-width: 1200px) {
+    .bntfull .elementor-button {
+        border-radius: clamp(16px, 1.5vw, 28px);
+        padding: clamp(16px, 2vw, 24px) clamp(32px, 4vw, 56px);
+        font-size: clamp(16px, 1.5vw, 20px);
+    }
+}
