@@ -1,0 +1,152 @@
+/* Стили для блоков по 100vh */
+.full-height-section {
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Основной контейнер */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Стили для десктопа - отключаем обычный скролл */
+@media (min-width: 1025px) {
+    body {
+        overflow: hidden;
+        height: 100vh;
+    }
+    
+    .sections-container {
+        height: 100vh;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .full-height-section {
+        height: 100vh;
+        position: absolute;
+        width: 100%;
+        top: 0;
+        left: 0;
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 1;
+    }
+    
+    .full-height-section.active {
+        z-index: 2;
+    }
+    
+    /* Скрываем скроллбар полностью на десктопе */
+    html {
+        overflow: hidden;
+    }
+}
+
+/* Стили для планшетов и мобильных устройств - обычный скролл */
+@media (max-width: 1024px) {
+    body {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    html {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    .sections-container {
+        height: auto;
+        overflow: visible;
+    }
+    
+    .full-height-section {
+        height: 100vh;
+        position: relative;
+        transform: none !important;
+        transition: none !important;
+    }
+}
+
+/* Стили для индикатора навигации (опционально) */
+.scroll-indicator {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: none;
+}
+
+@media (min-width: 1025px) {
+    .scroll-indicator {
+        display: block;
+    }
+}
+
+.scroll-indicator ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.scroll-indicator li {
+    margin: 10px 0;
+}
+
+.scroll-indicator a {
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.scroll-indicator a.active,
+.scroll-indicator a:hover {
+    background: #fff;
+    transform: scale(1.2);
+}
+
+/* Стили для кнопок навигации */
+.scroll-arrows {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 1000;
+    display: none;
+}
+
+@media (min-width: 1025px) {
+    .scroll-arrows {
+        display: block;
+    }
+}
+
+.scroll-arrow {
+    display: block;
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    text-align: center;
+    line-height: 40px;
+    margin: 5px 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    text-decoration: none;
+}
+
+.scroll-arrow:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.1);
+}
+
+.scroll-arrow.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
