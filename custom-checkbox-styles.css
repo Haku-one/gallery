@@ -1,0 +1,110 @@
+selector svg{
+    width: 25px;
+}
+
+/* Кастомный чекбокс - unchecked состояние */
+.elementor-field-group-acceptance2 label[for="form-field-acceptance2"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  border: 0.5px solid #fff;
+  border-radius: 3px;
+  background: transparent;
+  transition: border-width 0.2s ease;
+  box-sizing: border-box;
+}
+
+/* Галочка - цвет #011C2B */
+.elementor-field-group-acceptance2 label[for="form-field-acceptance2"]::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0px;
+  width: 14px;
+  height: 12px;
+  background-image: url('data:image/svg+xml;utf8,<svg width="14" height="12" viewBox="0 0 14 12" xmlns="http://www.w3.org/2000/svg"><path d="M0.791504 8.41667L4.62484 11.2917L13.2498 0.75" stroke="%23fff" stroke-width="0.8" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Checked состояние - утолщаем рамку и показываем галочку */
+.elementor-field-group-acceptance2 input[type="checkbox"].elementor-acceptance-field:checked + label::before {
+  border-width: 0.8px;
+}
+
+.elementor-field-group-acceptance2 input[type="checkbox"].elementor-acceptance-field:checked + label::after {
+  opacity: 1;
+}
+
+/* Hover эффект */
+.elementor-field-group-acceptance2 label[for="form-field-acceptance2"]:hover::before {
+  border-color: #011C2B;
+}
+
+/* Disabled состояние */
+.elementor-field-group-acceptance2 input[type="checkbox"].elementor-acceptance-field:disabled + label {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Стили для ссылки */
+.elementor-field-group-acceptance2 label[for="form-field-acceptance2"] a {
+  color: #fff !important;
+  text-decoration: underline;
+}
+
+.elementor-field-subgroup {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 15px;
+    width: 100%;
+}
+
+.elementor-field-group.elementor-column.elementor-field-type-submit.elementor-col-100.e-form__buttons {
+    padding-top: 10px;
+}
+
+selector ::placeholder{
+    opacity: 1;
+}
+
+@media(max-width:1024px) and (min-width:767px){
+   selector .elementor-field-textual.elementor-size-lg{
+        min-height: 50px !important;
+    }
+    
+    selector .elementor-field-subgroup {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 0px;
+}
+
+selector .elementor-field-group.elementor-column.elementor-field-type-submit.elementor-col-100.e-form__buttons {
+    padding-top: 0px;
+}
+
+.elementor-44 .elementor-element.elementor-element-e112767 .elementor-field-group{
+    margin-bottom: 10px;
+}
+
+.elementor-494 .elementor-element.elementor-element-ad96655 .elementor-button{
+    padding: 12px 0px;
+    width: 100%;
+}
+}
+
+@media(max-width:767px){
+  .elementor-494 .elementor-element.elementor-element-ad96655 .elementor-button{
+    padding: 12px 0px;
+    width: 100%;
+}
+ .elementor-field-textual.elementor-size-lg{
+        min-height: 52px !important;
+    }
+}
