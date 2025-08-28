@@ -94,3 +94,24 @@ add_action('elementor/query/tip_rabot_grid', function (WP_Query $query): void {
 
     $query->set('ignore_sticky_posts', true);
 });
+
+/**
+ * Minimal custom Query ID that preserves widget filters: `tip_rabot`
+ * Use this when Source/filters are already set in the widget.
+ */
+add_action('elementor/query/tip_rabot', function (WP_Query $query): void {
+    // Do not change tax_query or meta_query — respect widget settings
+
+    // Ensure stable ordering only if not specified in the widget
+    if (!$query->get('orderby')) {
+        $query->set('orderby', 'date');
+    }
+    if (!$query->get('order')) {
+        $query->set('order', 'DESC');
+    }
+
+    // Avoid sticky posts affecting results
+    $query->set('ignore_sticky_posts', true);
+
+    // Important: do NOT set offset or no_found_rows here to keep Load More working
+});
