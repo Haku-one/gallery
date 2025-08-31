@@ -4,8 +4,17 @@
  * Показывает по 8 элементов за раз, скрывая остальные
  */
 
-// Добавляем CSS стили для кастомной кнопки
+// Проверяем, что мы на странице portfolio
+function is_portfolio_page() {
+    return is_page('portfolio') || strpos($_SERVER['REQUEST_URI'], '/portfolio/') !== false;
+}
+
+// Добавляем CSS стили для кастомной кнопки (только на странице portfolio)
 function add_custom_load_more_styles() {
+    // Запускаем только на странице portfolio
+    if (!is_portfolio_page()) {
+        return;
+    }
     ?>
     <style>
     /* Уникальные стили для кастомной кнопки показать ещё */
@@ -109,8 +118,12 @@ function add_custom_load_more_styles() {
 }
 add_action('wp_head', 'add_custom_load_more_styles');
 
-// JavaScript для функционала кастомной кнопки
+// JavaScript для функционала кастомной кнопки (только на странице portfolio)
 function add_custom_load_more_script() {
+    // Запускаем только на странице portfolio
+    if (!is_portfolio_page()) {
+        return;
+    }
     ?>
     <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
@@ -252,8 +265,12 @@ function add_custom_load_more_script() {
 }
 add_action('wp_footer', 'add_custom_load_more_script', 999);
 
-// Скрываем оригинальные кнопки load-more
+// Скрываем оригинальные кнопки load-more (только на странице portfolio)
 function hide_original_load_more_buttons() {
+    // Запускаем только на странице portfolio
+    if (!is_portfolio_page()) {
+        return;
+    }
     ?>
     <style>
     /* Скрываем оригинальные кнопки load-more */
