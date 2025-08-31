@@ -66,4 +66,99 @@ function format_complex_prices($formatted_price, $price, $args) {
     }, $formatted_price);
 }
 add_filter('wc_price', 'format_complex_prices', 99, 3);
+
+// СПЕЦИАЛЬНЫЕ ФИЛЬТРЫ ДЛЯ БЛОКОВ WOOCOMMERCE (Gutenberg)
+// Эти фильтры нужны для новых блоков корзины и оформления заказа
+
+// Форматирование цен в блоках корзины
+function format_woocommerce_block_prices($price_data) {
+    if (is_array($price_data)) {
+        // Если это массив данных о цене
+        if (isset($price_data['price'])) {
+            $price_data['price'] = format_price_with_spaces($price_data['price']);
+        }
+        if (isset($price_data['regular_price'])) {
+            $price_data['regular_price'] = format_price_with_spaces($price_data['regular_price']);
+        }
+        if (isset($price_data['sale_price'])) {
+            $price_data['sale_price'] = format_price_with_spaces($price_data['sale_price']);
+        }
+    } else {
+        // Если это строка
+        $price_data = preg_replace_callback('/\b(\d{4,})\b/', function($matches) {
+            return format_price_with_spaces($matches[1]);
+        }, $price_data);
+    }
+    
+    return $price_data;
+}
+
+// Фильтры для блоков WooCommerce
+add_filter('woocommerce_blocks_cart_item_price', 'format_woocommerce_block_prices', 99);
+add_filter('woocommerce_blocks_cart_item_subtotal', 'format_woocommerce_block_prices', 99);
+add_filter('woocommerce_blocks_cart_total', 'format_woocommerce_block_prices', 99);
+add_filter('woocommerce_blocks_cart_subtotal', 'format_woocommerce_block_prices', 99);
+
+// JavaScript для форматирования цен в блоках после загрузки
+function add_block_price_formatting_script() {
+    if (is_cart() || is_checkout()) {
+        ?>
+        <script type="text/javascript">
+        jQuery(document).ready(function($) {
+            // Функция для форматирования чисел с пробелами
+            function formatNumberWithSpaces(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            }
+            
+            // Форматируем цены в блоках при загрузке и изменениях
+            function formatBlockPrices() {
+                $('.wc-block-formatted-money-amount, .wc-block-components-formatted-money-amount').each(function() {
+                    var $this = $(this);
+                    var text = $this.text();
+                    
+                    // Ищем числа от 1000 и заменяем их
+                    var newText = text.replace(/\b(\d{4,})\b/g, function(match) {
+                        return formatNumberWithSpaces(match);
+                    });
+                    
+                    if (newText !== text) {
+                        $this.text(newText);
+                    }
+                });
+            }
+            
+            // Запускаем при загрузке
+            formatBlockPrices();
+            
+            // Запускаем при изменениях в корзине
+            $(document).on('updated_cart_totals updated_checkout', formatBlockPrices);
+            
+            // Наблюдаем за изменениями в DOM для блоков
+            if (window.MutationObserver) {
+                var observer = new MutationObserver(function(mutations) {
+                    var shouldFormat = false;
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList') {
+                            $(mutation.addedNodes).find('.wc-block-formatted-money-amount, .wc-block-components-formatted-money-amount').each(function() {
+                                shouldFormat = true;
+                            });
+                        }
+                    });
+                    
+                    if (shouldFormat) {
+                        setTimeout(formatBlockPrices, 100);
+                    }
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+        });
+        </script>
+        <?php
+    }
+}
+add_action('wp_footer', 'add_block_price_formatting_script');
 ?>
