@@ -4,6 +4,123 @@
  * Добавьте этот код в functions.php вашей темы
  */
 
+/**
+ * Форматирование цен WooCommerce с пробелами
+ * Преобразует 462431 в 462 431
+ */
+
+// Функция для форматирования числа с пробелами
+function format_price_with_spaces($price) {
+    // Убираем все пробелы и форматируем число
+    $clean_price = preg_replace('/\s+/', '', $price);
+    
+    // Проверяем, что это число
+    if (!is_numeric($clean_price)) {
+        return $price;
+    }
+    
+    // Форматируем число с пробелами каждые 3 цифры
+    return number_format((float)$clean_price, 0, ',', ' ');
+}
+
+// Фильтр для форматирования цены в WooCommerce
+function custom_woocommerce_price_format($price, $args) {
+    // Получаем символ валюты
+    $currency_symbol = get_woocommerce_currency_symbol($args['currency']);
+    
+    // Извлекаем числовое значение из цены
+    $numeric_price = preg_replace('/[^\d\.,]/', '', $price);
+    $numeric_price = str_replace(',', '.', $numeric_price);
+    
+    // Форматируем с пробелами
+    $formatted_price = format_price_with_spaces($numeric_price);
+    
+    // Возвращаем отформатированную цену с символом валюты
+    switch ($args['currency_pos']) {
+        case 'left':
+            return $currency_symbol . $formatted_price;
+        case 'right':
+            return $formatted_price . $currency_symbol;
+        case 'left_space':
+            return $currency_symbol . ' ' . $formatted_price;
+        case 'right_space':
+            return $formatted_price . ' ' . $currency_symbol;
+        default:
+            return $currency_symbol . $formatted_price;
+    }
+}
+
+// Применяем фильтр к ценам WooCommerce
+add_filter('wc_price', 'custom_woocommerce_price_format', 10, 2);
+
+// Дополнительный фильтр для форматирования цен в разных местах
+function format_woocommerce_price_display($price_html, $price, $args) {
+    // Проверяем, что цена содержит числа
+    if (preg_match('/\d/', $price_html)) {
+        // Ищем числа в HTML и заменяем их отформатированными
+        $price_html = preg_replace_callback('/(\d{4,})/', function($matches) {
+            return format_price_with_spaces($matches[1]);
+        }, $price_html);
+    }
+    
+    return $price_html;
+}
+
+// Применяем к различным местам отображения цен
+add_filter('woocommerce_format_price_range', 'format_woocommerce_price_display', 10, 3);
+add_filter('woocommerce_get_price_html', 'format_woocommerce_price_display', 10, 3);
+
+// Форматирование цен в корзине и оформлении заказа
+function format_cart_item_price($price_html, $cart_item, $cart_item_key) {
+    return preg_replace_callback('/(\d{4,})/', function($matches) {
+        return format_price_with_spaces($matches[1]);
+    }, $price_html);
+}
+add_filter('woocommerce_cart_item_price', 'format_cart_item_price', 10, 3);
+
+// Форматирование итоговых сумм
+function format_cart_totals($price_html) {
+    return preg_replace_callback('/(\d{4,})/', function($matches) {
+        return format_price_with_spaces($matches[1]);
+    }, $price_html);
+}
+add_filter('woocommerce_cart_item_subtotal', 'format_cart_totals', 10, 1);
+add_filter('woocommerce_cart_subtotal', 'format_cart_totals', 10, 1);
+add_filter('woocommerce_cart_total', 'format_cart_totals', 10, 1);
+
+// Дополнительные фильтры для полного покрытия всех мест отображения цен
+add_filter('woocommerce_price_format', 'format_cart_totals', 10, 1);
+add_filter('woocommerce_order_formatted_line_subtotal', 'format_cart_totals', 10, 1);
+add_filter('woocommerce_get_formatted_order_total', 'format_cart_totals', 10, 1);
+
+// Форматирование цен в виджетах и shortcodes
+function format_widget_prices($price_html) {
+    return preg_replace_callback('/(\d{4,})/', function($matches) {
+        return format_price_with_spaces($matches[1]);
+    }, $price_html);
+}
+add_filter('woocommerce_widget_cart_item_quantity', 'format_widget_prices', 10, 1);
+
+// Форматирование цен в мини-корзине
+function format_mini_cart_prices($price_html, $cart_item, $cart_item_key) {
+    return preg_replace_callback('/(\d{4,})/', function($matches) {
+        return format_price_with_spaces($matches[1]);
+    }, $price_html);
+}
+add_filter('woocommerce_widget_cart_item_price', 'format_mini_cart_prices', 10, 3);
+
+// Альтернативный метод через изменение настроек WooCommerce
+function modify_woocommerce_price_thousand_separator() {
+    return ' '; // Устанавливаем пробел как разделитель тысяч
+}
+add_filter('woocommerce_price_thousand_sep', 'modify_woocommerce_price_thousand_separator');
+
+// Убираем десятичные знаки для целых чисел
+function modify_woocommerce_price_decimals($decimals) {
+    return 0; // Убираем десятичные знаки
+}
+add_filter('woocommerce_price_num_decimals', 'modify_woocommerce_price_decimals');
+
 // Подключение CSS для плавного скролла
 function enqueue_elementor_smooth_scroll_styles() {
     // Проверяем, что мы не в админке
